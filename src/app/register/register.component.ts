@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../core/auth.service'
 import { Router, Params } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AngularFirestore } from 'angularfire2/firestore';
 
 @Component({
   selector: 'app-register',
@@ -17,7 +18,8 @@ export class RegisterComponent {
   constructor(
     public authService: AuthService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private db: AngularFirestore
   ) {
     this.createForm();
    }
@@ -61,6 +63,7 @@ export class RegisterComponent {
        console.log(res);
        this.errorMessage = "";
        this.successMessage = "Your account has been created";
+       this.db.doc(`users/${value.email}`).set({'first': value.first, 'last': value.last});
        this.router.navigate(['/dash']);
      }, err => {
        console.log(err);

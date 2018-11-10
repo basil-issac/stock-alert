@@ -24,6 +24,8 @@ export class RegisterComponent {
 
    createForm() {
      this.registerForm = this.fb.group({
+       first: ['', Validators.required ],
+       last: ['', Validators.required ],
        email: ['', Validators.required ],
        password: ['',Validators.required]
      });
@@ -32,7 +34,7 @@ export class RegisterComponent {
    tryFacebookLogin(){
      this.authService.doFacebookLogin()
      .then(res =>{
-       this.router.navigate(['/user']);
+       this.router.navigate(['/dash']);
      }, err => console.log(err)
      )
    }
@@ -40,7 +42,7 @@ export class RegisterComponent {
    tryTwitterLogin(){
      this.authService.doTwitterLogin()
      .then(res =>{
-       this.router.navigate(['/user']);
+       this.router.navigate(['/dash']);
      }, err => console.log(err)
      )
    }
@@ -48,7 +50,7 @@ export class RegisterComponent {
    tryGoogleLogin(){
      this.authService.doGoogleLogin()
      .then(res =>{
-       this.router.navigate(['/user']);
+       this.router.navigate(['/dash']);
      }, err => console.log(err)
      )
    }
@@ -59,6 +61,7 @@ export class RegisterComponent {
        console.log(res);
        this.errorMessage = "";
        this.successMessage = "Your account has been created";
+       this.router.navigate(['/dash']);
      }, err => {
        console.log(err);
        this.errorMessage = err.message;

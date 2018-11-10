@@ -19,13 +19,17 @@ import { AuthGuard } from './core/auth.gaurd';
 import { UserResolver } from './user/user.resolver';
 import { UserService } from './core/user.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DashComponent } from './dash/dash.component';
+
+import { ChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     UserComponent,
-    RegisterComponent
+    RegisterComponent,
+    DashComponent
   ],
   imports: [
     BrowserModule,
@@ -35,6 +39,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     AngularFirestoreModule,
     AngularFireAuthModule,
     RouterModule.forRoot(rootRouterConfig, { useHash: false }),
+    ChartsModule
   ],
   providers: [AuthService, UserService, AuthGuard, UserResolver],
   bootstrap: [AppComponent]

@@ -1,12 +1,33 @@
-<div>
+<div class="form-group"> 
+  <label>Symbol  :</label>
+  <input #box (keyup.enter)="onSearch(box.value)">
+  <button (click)="onSearch(box.value)"> Search </button>
+</div>
 
-    <div style="display: block">
-      <canvas baseChart
-              [datasets]="barChartData"
-              [labels]="barChartLabels"
-              [options]="barChartOptions"
-              [legend]="barChartLegend"
-              [chartType]="barChartType">
-      </canvas>
+<div class="row">
+
+  <div class="col-md-6">
+    <div style="display: block;">
+    <canvas baseChart width="400" height="400"
+                [datasets]="lineChartData"
+                [labels]="lineChartLabels"
+                [options]="lineChartOptions"
+                [colors]="lineChartColors"
+                [legend]="lineChartLegend"
+                [chartType]="lineChartType"
+                (chartHover)="chartHovered($event)"
+                (chartClick)="chartClicked($event)"></canvas>
     </div>
   </div>
+
+  <div class="col-md-6" style="margin-bottom: 10px">
+    <div style="display: block">
+      <p>{{currentQuote.companyName}} {{currentQuote.symbol}} Latest Price: {{currentQuote.latestPrice}}</p>
+      <p>Open: {{currentQuote.open}} Close: {{currentQuote.close}}</p>
+      <p>High: {{currentQuote.high}} Low: {{currentQuote.low}}</p>
+      <P>Volume: {{currentQuote.latestVolume}}</P>
+    </div>
+    <button (click)="addToWatchList()"> Add To Watch List </button>
+  </div>
+
+</div>

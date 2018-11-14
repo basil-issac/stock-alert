@@ -20,6 +20,7 @@ import { UserResolver } from './user/user.resolver';
 import { UserService } from './core/user.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashComponent } from './dash/dash.component';
+import { HttpClientModule } from '@angular/common/http';
 
 import { ChartsModule } from 'ng2-charts';
 
@@ -39,7 +40,8 @@ import { ChartsModule } from 'ng2-charts';
     AngularFirestoreModule,
     AngularFireAuthModule,
     RouterModule.forRoot(rootRouterConfig, { useHash: false }),
-    ChartsModule
+    ChartsModule,
+    HttpClientModule
   ],
   providers: [AuthService, UserService, AuthGuard, UserResolver],
   bootstrap: [AppComponent]

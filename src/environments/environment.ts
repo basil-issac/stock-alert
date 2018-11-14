@@ -11,7 +11,8 @@ export const environment = {
     projectId: "stock-watch-bd638",
     storageBucket: "stock-watch-bd638.appspot.com",
     messagingSenderId: "646374588895"
-  }
+  },
+  iex_host: `https://api.iextrading.com/1.0/stock`
 };
 
 /*

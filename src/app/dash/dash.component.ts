@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { QuoteService } from '../iex/quote.service';
 import { ChartService } from '../iex/chart.service';
+import { AngularFirestore } from 'angularfire2/firestore';
+import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'app-dash',
@@ -9,6 +11,7 @@ import { ChartService } from '../iex/chart.service';
 })
 export class DashComponent implements OnInit {
 
+  public entries: string[];
   public lineChartLegend:boolean = true;
   public lineChartType:string = 'line';
   private currentQuote: any[];
@@ -16,7 +19,9 @@ export class DashComponent implements OnInit {
   public lineChartLabels:Array<any>;
   private searchSymbol;
 
-  constructor(private quoteService: QuoteService, private chartService: ChartService) { 
+  constructor(private quoteService: QuoteService,
+     private chartService: ChartService,
+     private db: AngularFirestore) { 
     this.currentQuote = [];
     this.lineChartData = new Array<any>();
     this.lineChartLabels = new Array<any>();
@@ -25,11 +30,11 @@ export class DashComponent implements OnInit {
   ngOnInit() {
   }
 
-
-
   private processChart(chartResponse: any[]) {
 
     console.log(chartResponse);
+
+    this.entries = ['1d','1m','3m','6m','ytd','1y','2y','5y']
 
     this.lineChartLabels.length = 0;
     this.lineChartData.length = 0;
@@ -41,14 +46,13 @@ export class DashComponent implements OnInit {
     var low = [];
 
     chartResponse.forEach(item => {
-      labels.push(item['date']);
+      labels.push(item['label']);
       open.push(item['open']);
       high.push(item['high']);
       low.push(item['low']);
     });
 
     this.lineChartLabels = labels;
-    //data.push({data: open, label: 'Open'}, {data: high, label: 'High'}, {data: low, label: 'Low'});
     this.lineChartData.push({data: open, label: 'Open'});
     this.lineChartData.push({data: high, label: 'High'});
     this.lineChartData.push({data: low, label: 'Low'});
@@ -101,14 +105,18 @@ export class DashComponent implements OnInit {
     console.log(e);
   }
 
-  public onSearch(symbol: string) {
+  public onSearch(symbol: string, chartRange: string) {
+
+    if(chartRange == null || chartRange == '') {
+      chartRange = '1m';
+    }
     this.searchSymbol = symbol;
     this.quoteService.getQuote(symbol).subscribe((response: any[]) => {
       console.log('Quote response: ' + response);
       this.currentQuote = response;
     });
 
-    this.chartService.getChart(symbol,"").subscribe((response: any[]) => {
+    this.chartService.getChart(symbol,chartRange).subscribe((response: any[]) => {
 
       this.processChart(response);
 
@@ -117,6 +125,20 @@ export class DashComponent implements OnInit {
 
   public addToWatchList() {
     console.log(`Added ${this.searchSymbol} to watch list`);
+    var user = firebase.auth().currentUser;
+    var d = new Date();
+    var date = d.getUTCMonth() + '/' +d.getUTCDate() + '/' + d.getUTCFullYear();
+    var time = ' '+ d.getUTCHours() + ":" + d.getUTCMinutes() + ":" + d.getUTCSeconds();
+    var searchDate = `${date} ${time}`;
+    this.db.doc(`users/${user.email}`)
+      .collection('watchlist')
+      .doc(this.searchSymbol)
+      .set({'active': true, 'added': searchDate});
+  }
+
+  public changeChartRange(entry: string) {
+    console.log(`onSelectionChange symbol: ${this.searchSymbol} range: ${entry}`);
+    this.onSearch(this.searchSymbol, entry);
   }
 
 }

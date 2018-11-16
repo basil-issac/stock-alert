@@ -1,5 +1,5 @@
-<div class="form-group"> 
-  <label>Symbol  :</label>
+<div class="form-group">
+  <label>Symbol :</label>
   <input #box (keyup.enter)="onSearch(box.value)">
   <button (click)="onSearch(box.value)"> Search </button>
 </div>
@@ -7,24 +7,28 @@
 <div class="row">
 
   <div class="col-md-6">
-    <div style="display: block;">
-    <canvas baseChart width="400" height="400"
-                [datasets]="lineChartData"
-                [labels]="lineChartLabels"
-                [options]="lineChartOptions"
-                [colors]="lineChartColors"
-                [legend]="lineChartLegend"
-                [chartType]="lineChartType"
-                (chartHover)="chartHovered($event)"
-                (chartClick)="chartClicked($event)"></canvas>
+    <div style="display: block">
+      <canvas baseChart width="1200" height="800" [datasets]="lineChartData" [labels]="lineChartLabels" [options]="lineChartOptions"
+        [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType" (chartHover)="chartHovered($event)"
+        (chartClick)="chartClicked($event)"></canvas>
     </div>
   </div>
 
-  <div class="col-md-6" style="margin-bottom: 10px">
+  <div class="col-md-6">
+    <div *ngFor="let entry of entries" style="display: block">
+      <button (click)="changeChartRange(entry)"> {{entry}} </button>
+    </div>
+  </div>
+
+  <div class="col-md-6">
     <div style="display: block">
-      <p>{{currentQuote.companyName}} {{currentQuote.symbol}} Latest Price: {{currentQuote.latestPrice}}</p>
-      <p>Open: {{currentQuote.open}} Close: {{currentQuote.close}}</p>
-      <p>High: {{currentQuote.high}} Low: {{currentQuote.low}}</p>
+      <p>Company name: {{currentQuote.companyName}}</p>
+      <p>Symbol: {{currentQuote.symbol}}</p>
+      <p>Price: {{currentQuote.latestPrice}}</p>
+      <p>Open: {{currentQuote.open}}</p>
+      <p>Close: {{currentQuote.close}}</p>
+      <p>High: {{currentQuote.high}}</p>
+      <p>Low: {{currentQuote.low}}</p>
       <P>Volume: {{currentQuote.latestVolume}}</P>
     </div>
     <button (click)="addToWatchList()"> Add To Watch List </button>

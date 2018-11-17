@@ -7,6 +7,8 @@ import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
 import { FirestoreService } from '../firestore.service';
 import { WatchItem } from '../model/watch-item';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalComponent } from '../custom/modal/modal.component';
 
 
 @Component({
@@ -34,9 +36,8 @@ export class DashComponent implements OnInit {
   constructor(private quoteService: QuoteService,
     private chartService: ChartService,
     private db: AngularFirestore,
-    private firestoreService: FirestoreService) 
-    
-    {
+    private firestoreService: FirestoreService,
+    private modalService: NgbModal) {
     this.currentQuote = [];
     this.lineChartData = new Array<any>();
     this.lineChartLabels = new Array<any>();
@@ -51,8 +52,8 @@ export class DashComponent implements OnInit {
       this.watchList.length = 0;
       response.map(item => {
         console.log(`item ${item['id']}`);
-        this.watchList.push({id: item['id'], active: item['active'], added: item['added']});
-        this.onSearch(item['id'],"3m");
+        this.watchList.push({ id: item['id'], active: item['active'], added: item['added'] });
+        this.onSearch(item['id'], "3m");
       })
       console.log(this.watchList);
     });
@@ -100,9 +101,17 @@ export class DashComponent implements OnInit {
   }
 
   onDeleteWatchItem(item: WatchItem) {
-    
+    const modalRef = this.modalService.open(ModalComponent);
+    modalRef.componentInstance.name = item.id;
+    modalRef.result.then((result) => {
+      if (result == 'confirm') {
+        this.firestoreService.deleteDocument(`${this.dataPath}/${item.id}`);
+        console.log(`Deleted item ${item.id} from watch list.`);
+      }
+    }).catch((error) => {
+      console.log(error);
+    });
   }
-
 
   private processChart(chartResponse: any[]) {
 

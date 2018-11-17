@@ -25,7 +25,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { ChartsModule } from 'ng2-charts';
 import { AlertModule } from 'ngx-bootstrap';
-import { NgbdModalContentComponent } from './custom/ngbd-modal-content/ngbd-modal-content.component';
+import { ModalComponent } from './custom/modal/modal.component';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,7 @@ import { NgbdModalContentComponent } from './custom/ngbd-modal-content/ngbd-moda
     UserComponent,
     RegisterComponent,
     DashComponent,
-    NgbdModalContentComponent
+    ModalComponent
   ],
   imports: [
     BrowserModule,
@@ -46,8 +47,11 @@ import { NgbdModalContentComponent } from './custom/ngbd-modal-content/ngbd-moda
     RouterModule.forRoot(rootRouterConfig, { useHash: false }),
     ChartsModule,
     HttpClientModule,
-    AlertModule.forRoot()
+    AlertModule.forRoot(),
+    NgbModule.forRoot(),
+    
   ],
+  entryComponents: [ModalComponent],
   providers: [AuthService, UserService, AuthGuard, UserResolver],
   bootstrap: [AppComponent]
 })

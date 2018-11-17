@@ -3,6 +3,11 @@ import { QuoteService } from '../iex/quote.service';
 import { ChartService } from '../iex/chart.service';
 import { AngularFirestore } from 'angularfire2/firestore';
 import * as firebase from 'firebase/app';
+import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators';
+import { FirestoreService } from '../firestore.service';
+import { WatchItem } from '../model/watch-item';
+
 
 @Component({
   selector: 'app-dash',
@@ -12,29 +17,98 @@ import * as firebase from 'firebase/app';
 export class DashComponent implements OnInit {
 
   public entries: string[];
-  public lineChartLegend:boolean = true;
-  public lineChartType:string = 'line';
+  public watchList: WatchItem[];
+  public lineChartLegend: boolean = true;
+  public lineChartType: string = 'line';
   private currentQuote: any[];
-  public lineChartData:Array<any>;
-  public lineChartLabels:Array<any>;
+  public lineChartData: Array<any>;
+  public lineChartLabels: Array<any>;
   private searchSymbol;
 
+  firestoreData: Observable<any[]>;
+  dataPath: string;
+
+  uncheckableRadioModel = 'Left';
+
+
   constructor(private quoteService: QuoteService,
-     private chartService: ChartService,
-     private db: AngularFirestore) { 
+    private chartService: ChartService,
+    private db: AngularFirestore,
+    private firestoreService: FirestoreService) 
+    
+    {
     this.currentQuote = [];
     this.lineChartData = new Array<any>();
     this.lineChartLabels = new Array<any>();
+    this.watchList = [];
+    this.dataPath = `/users/${firebase.auth().currentUser.email}/watchlist`;
+    this.firestoreData = this.firestoreService.getCollection(this.dataPath);
   }
 
   ngOnInit() {
+
+    this.firestoreData.subscribe(response => {
+      this.watchList.length = 0;
+      response.map(item => {
+        console.log(`item ${item['id']}`);
+        this.watchList.push({id: item['id'], active: item['active'], added: item['added']});
+        this.onSearch(item['id'],"3m");
+      })
+      console.log(this.watchList);
+    });
+
   }
+
+  onSearch(symbol: string, chartRange: string) {
+
+    if (chartRange == null || chartRange == '') {
+      chartRange = '1m';
+    }
+    this.searchSymbol = symbol;
+    this.quoteService.getQuote(symbol).subscribe((response: any[]) => {
+      console.log('Quote response: ' + response);
+      this.currentQuote = response;
+    });
+
+    this.chartService.getChart(symbol, chartRange).subscribe((response: any[]) => {
+
+      this.processChart(response);
+
+    });
+  }
+
+  addToWatchList() {
+    console.log(`Added ${this.searchSymbol} to watch list`);
+    var user = firebase.auth().currentUser;
+    var d = new Date();
+    var date = d.getUTCMonth() + '/' + d.getUTCDate() + '/' + d.getUTCFullYear();
+    var time = ' ' + d.getUTCHours() + ":" + d.getUTCMinutes() + ":" + d.getUTCSeconds();
+    var searchDate = `${date} ${time}`;
+    this.db.doc(`users/${user.email}`)
+      .collection('watchlist')
+      .doc(this.searchSymbol)
+      .set({ 'active': true, 'added': searchDate });
+  }
+
+  changeChartRange(entry: string) {
+    console.log(`onSelectionChange symbol: ${this.searchSymbol} range: ${entry}`);
+    this.onSearch(this.searchSymbol, entry);
+  }
+
+  onEditWatchItem(item: WatchItem) {
+
+  }
+
+  onDeleteWatchItem(item: WatchItem) {
+    
+  }
+
 
   private processChart(chartResponse: any[]) {
 
     console.log(chartResponse);
 
-    this.entries = ['1d','1m','3m','6m','ytd','1y','2y','5y']
+    this.entries = ['1d', '1m', '3m', '6m', 'ytd', '1y', '2y', '5y']
 
     this.lineChartLabels.length = 0;
     this.lineChartData.length = 0;
@@ -53,24 +127,17 @@ export class DashComponent implements OnInit {
     });
 
     this.lineChartLabels = labels;
-    this.lineChartData.push({data: open, label: 'Open'});
-    this.lineChartData.push({data: high, label: 'High'});
-    this.lineChartData.push({data: low, label: 'Low'});
+    this.lineChartData.push({ data: open, label: 'Open' });
+    this.lineChartData.push({ data: high, label: 'High' });
+    this.lineChartData.push({ data: low, label: 'Low' });
 
   }
 
-  // public lineChartData:Array<any> = [
-  //   {data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A'},
-  //   {data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B'},
-  //   {data: [18, 48, 77, 9, 100, 27, 40], label: 'Series C'}
-  // ];
-
-  // public lineChartLabels:Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  public lineChartOptions:any = {
+  public lineChartOptions: any = {
     responsive: true
   };
 
-  public lineChartColors:Array<any> = [
+  public lineChartColors: Array<any> = [
     { // grey
       backgroundColor: 'rgba(148,159,177,0.2)',
       borderColor: 'rgba(148,159,177,1)',
@@ -97,48 +164,12 @@ export class DashComponent implements OnInit {
     }
   ];
 
-  public chartClicked(e:any):void {
-    console.log(e);
-  }
- 
-  public chartHovered(e:any):void {
+  chartClicked(e: any): void {
     console.log(e);
   }
 
-  public onSearch(symbol: string, chartRange: string) {
-
-    if(chartRange == null || chartRange == '') {
-      chartRange = '1m';
-    }
-    this.searchSymbol = symbol;
-    this.quoteService.getQuote(symbol).subscribe((response: any[]) => {
-      console.log('Quote response: ' + response);
-      this.currentQuote = response;
-    });
-
-    this.chartService.getChart(symbol,chartRange).subscribe((response: any[]) => {
-
-      this.processChart(response);
-
-    });
-  }
-
-  public addToWatchList() {
-    console.log(`Added ${this.searchSymbol} to watch list`);
-    var user = firebase.auth().currentUser;
-    var d = new Date();
-    var date = d.getUTCMonth() + '/' +d.getUTCDate() + '/' + d.getUTCFullYear();
-    var time = ' '+ d.getUTCHours() + ":" + d.getUTCMinutes() + ":" + d.getUTCSeconds();
-    var searchDate = `${date} ${time}`;
-    this.db.doc(`users/${user.email}`)
-      .collection('watchlist')
-      .doc(this.searchSymbol)
-      .set({'active': true, 'added': searchDate});
-  }
-
-  public changeChartRange(entry: string) {
-    console.log(`onSelectionChange symbol: ${this.searchSymbol} range: ${entry}`);
-    this.onSearch(this.searchSymbol, entry);
+  chartHovered(e: any): void {
+    console.log(e);
   }
 
 }

@@ -7,7 +7,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.scss']
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
 

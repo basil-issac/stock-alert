@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
+
 import { AppComponent } from './app.component';
 
 import { RouterModule } from '@angular/router';
@@ -23,6 +24,8 @@ import { DashComponent } from './dash/dash.component';
 import { HttpClientModule } from '@angular/common/http';
 
 import { ChartsModule } from 'ng2-charts';
+import { AlertModule } from 'ngx-bootstrap';
+import { NgbdModalContentComponent } from './custom/ngbd-modal-content/ngbd-modal-content.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +33,8 @@ import { ChartsModule } from 'ng2-charts';
     LoginComponent,
     UserComponent,
     RegisterComponent,
-    DashComponent
+    DashComponent,
+    NgbdModalContentComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +45,8 @@ import { ChartsModule } from 'ng2-charts';
     AngularFireAuthModule,
     RouterModule.forRoot(rootRouterConfig, { useHash: false }),
     ChartsModule,
-    HttpClientModule
+    HttpClientModule,
+    AlertModule.forRoot()
   ],
   providers: [AuthService, UserService, AuthGuard, UserResolver],
   bootstrap: [AppComponent]

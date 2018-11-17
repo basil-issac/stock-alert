@@ -1,17 +1,17 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <div class="container">
-      <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/dash">Dash Board</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/user">User</a>
-          </li>
-      </ul>
-    </div>
+<div class="container">
+  <div class="jumbotron">
+    <h1>Welcome to {{ title }}!</h1>
+    <h2>Watch your stocks and set alerts!</h2>
+  </div>
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/dash">Dash Board</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/user">User</a>
+    </li>
+  </ul>
+
   <router-outlet></router-outlet>
 </div>

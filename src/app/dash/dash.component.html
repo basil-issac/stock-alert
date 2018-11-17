@@ -1,26 +1,74 @@
-<div class="form-group">
-  <label>Symbol :</label>
-  <input #box (keyup.enter)="onSearch(box.value)">
-  <button (click)="onSearch(box.value)"> Search </button>
-</div>
 
-<div class="row">
+<div class="panel panel-primary">
 
-  <div class="col-md-6">
-    <div style="display: block">
-      <canvas baseChart width="1200" height="800" [datasets]="lineChartData" [labels]="lineChartLabels" [options]="lineChartOptions"
-        [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType" (chartHover)="chartHovered($event)"
-        (chartClick)="chartClicked($event)"></canvas>
+  <div class="panel-heading">
+    Search
+  </div>
+
+  <div class="panel-body">
+    <label>Symbol :</label>
+    <input #box (keyup.enter)="onSearch(box.value)">
+    <button (click)="onSearch(box.value)"> Search </button>
+  </div>
+
+  <div class="panel-heading">
+    Chart
+  </div>
+
+  <div class="panel-body">
+    <canvas baseChart width="1200" height="800" [datasets]="lineChartData" [labels]="lineChartLabels" [options]="lineChartOptions"
+      [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType" (chartHover)="chartHovered($event)"
+      (chartClick)="chartClicked($event)"></canvas>
+
+    <div class="btn-group" btnRadioGroup [(ngModel)]="uncheckableRadioModel">
+
+      <div *ngFor="let entry of entries" style="display: block">
+        <label class="btn btn-info" btnRadio="Left" uncheckable tabindex="0" (click)="changeChartRange(entry)" role="button">{{entry}}</label>
+        <!-- <button (click)="changeChartRange(entry)"> {{entry}} </button> -->
+      </div>
+      
     </div>
   </div>
 
-  <div class="col-md-6">
-    <div *ngFor="let entry of entries" style="display: block">
-      <button (click)="changeChartRange(entry)"> {{entry}} </button>
-    </div>
+  <div class="panel-heading">
+    Watch List
   </div>
 
-  <div class="col-md-6">
+  <div class="panel-body">
+    <table mdbTable striped="true">
+      <thead>
+        <tr>
+          <th> Symbol </th>
+          <th> Added </th>
+          <th> Active </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr mdbTableCol *ngFor="let item of watchList">
+          <th scope="row">{{item.id}}</th>
+          <td>{{item.added}}</td>
+          <td>{{item.active}}</td>
+          <td>
+            <button type="button" class="btn btn-primary" (click)="onSearch(item.id)">
+              View
+            </button>
+          </td>
+          <td>
+            <button type="button" class="btn btn-warning" (click)="onEdit(item)">
+              Edit
+            </button>
+          </td>
+          <td>
+            <button type="button" class="btn btn-danger" (click)="delete(item)">
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel-body">
     <div style="display: block">
       <p>Company name: {{currentQuote.companyName}}</p>
       <p>Symbol: {{currentQuote.symbol}}</p>
@@ -31,7 +79,10 @@
       <p>Low: {{currentQuote.low}}</p>
       <P>Volume: {{currentQuote.latestVolume}}</P>
     </div>
-    <button (click)="addToWatchList()"> Add To Watch List </button>
+    <button type="button" class="btn btn-primary" (click)="addToWatchList()">
+      Add To Watch List
+    </button>
   </div>
+
 
 </div>

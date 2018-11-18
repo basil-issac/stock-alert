@@ -14,4 +14,10 @@ export class QuoteService {
     return this.http.get(url);
   }
 
+  getBatchQuote(symbols: string[]) {
+    var result: any[];
+    var url = `${environment.iex_host}/market/batch?symbols=${symbols.join(',')}&types=quote`;
+    return this.http.get(url);
+  }
+
 }

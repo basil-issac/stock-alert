@@ -31,6 +31,9 @@ export class DashComponent implements OnInit {
   dataPath: string;
 
   uncheckableRadioModel = 'Left';
+  alertMessage: string;
+  searchMessage: string;
+  searchNotFoundMessage: string;
 
 
   constructor(private quoteService: QuoteService,
@@ -51,11 +54,24 @@ export class DashComponent implements OnInit {
     this.firestoreData.subscribe(response => {
       this.watchList.length = 0;
       response.map(item => {
-        console.log(`item ${item['id']}`);
-        this.watchList.push({ id: item['id'], active: item['active'], added: item['added'] });
-        this.onSearch(item['id'], "3m");
-      })
-      console.log(this.watchList);
+        this.watchList.push(
+          {
+            id: item['id']
+            , companyName: item['companyName']
+            , active: item['active']
+            , added: item['added']
+            , price: 0.0
+            , percentageChange: 0.0
+          }
+        );
+      });
+      if (this.watchList.length > 0) {
+        this.onSearch(this.watchList[0].id, "1m");
+      } else {
+        this.onSearch("AAPL", "");
+      }
+
+      this.refreshWatchListData();
     });
 
   }
@@ -65,11 +81,17 @@ export class DashComponent implements OnInit {
     if (chartRange == null || chartRange == '') {
       chartRange = '1m';
     }
-    this.searchSymbol = symbol;
+    
     this.quoteService.getQuote(symbol).subscribe((response: any[]) => {
-      console.log('Quote response: ' + response);
+      this.searchSymbol = symbol;
+      this.searchNotFoundMessage = null;
+      this.searchMessage = `Search found ${response['symbol']}`;
       this.currentQuote = response;
-    });
+    },
+      error => {
+        this.searchMessage = null;
+        this.searchNotFoundMessage = `Did not find ${symbol}. Please see if symbol exists in http://eoddata.com/symbols.aspx`;
+      });
 
     this.chartService.getChart(symbol, chartRange).subscribe((response: any[]) => {
 
@@ -88,16 +110,14 @@ export class DashComponent implements OnInit {
     this.db.doc(`users/${user.email}`)
       .collection('watchlist')
       .doc(this.searchSymbol)
-      .set({ 'active': true, 'added': searchDate });
+      .set({ 'active': true, 'added': searchDate, 'companyName': this.currentQuote['companyName'] });
+
+    this.alertMessage = `${this.searchSymbol} was added to your watch list.`
   }
 
   changeChartRange(entry: string) {
     console.log(`onSelectionChange symbol: ${this.searchSymbol} range: ${entry}`);
     this.onSearch(this.searchSymbol, entry);
-  }
-
-  onEditWatchItem(item: WatchItem) {
-
   }
 
   onDeleteWatchItem(item: WatchItem) {
@@ -107,10 +127,31 @@ export class DashComponent implements OnInit {
       if (result == 'confirm') {
         this.firestoreService.deleteDocument(`${this.dataPath}/${item.id}`);
         console.log(`Deleted item ${item.id} from watch list.`);
+        this.alertMessage = `${item.id} was deleted from your watch list.`
       }
     }).catch((error) => {
       console.log(error);
     });
+  }
+
+  refreshWatchListData() {
+    if (this.watchList.length > 0) {
+      this.quoteService.getBatchQuote(this.watchList.map((item) => item.id)).subscribe((response) => {
+        this.watchList.forEach((item) => {
+          item.price = response[item.id]['quote']['latestPrice'];
+          item.percentageChange = response[item.id]['quote']['change'];
+        });
+      });
+    }
+  }
+
+  symbolInWatchList() {
+    var item = this.watchList.find((item) => item.id == this.searchSymbol);
+    if (item == null) {
+      return false;
+    }
+
+    return true;
   }
 
   private processChart(chartResponse: any[]) {

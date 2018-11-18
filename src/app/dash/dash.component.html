@@ -1,88 +1,99 @@
+<div class="panel-body">
+  <label>Type in Symbol :</label>
+  <input class="form-control" #box (keyup.enter)="onSearch(box.value)">
+  <button class="btn-primary" (click)="onSearch(box.value)"> Search </button>
 
-<div class="panel panel-primary">
+  <ngb-alert *ngIf="searchMessage" type="success" (close)="searchMessage = null">
+      {{searchMessage}}
+    </ngb-alert>
 
-  <div class="panel-heading">
-    Search
-  </div>
-
-  <div class="panel-body">
-    <label>Symbol :</label>
-    <input #box (keyup.enter)="onSearch(box.value)">
-    <button (click)="onSearch(box.value)"> Search </button>
-  </div>
-
-  <div class="panel-heading">
-    Chart
-  </div>
-
-  <div class="panel-body">
-    <canvas baseChart width="1200" height="800" [datasets]="lineChartData" [labels]="lineChartLabels" [options]="lineChartOptions"
-      [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType" (chartHover)="chartHovered($event)"
-      (chartClick)="chartClicked($event)"></canvas>
-
-    <div class="btn-group" btnRadioGroup [(ngModel)]="uncheckableRadioModel">
-
-      <div *ngFor="let entry of entries" style="display: block">
-        <label class="btn btn-info" btnRadio="Left" uncheckable tabindex="0" (click)="changeChartRange(entry)" role="button">{{entry}}</label>
-        <!-- <button (click)="changeChartRange(entry)"> {{entry}} </button> -->
-      </div>
-      
-    </div>
-  </div>
-
-  <div class="panel-heading">
-    Watch List
-  </div>
-
-  <div class="panel-body">
-    <table mdbTable striped="true">
-      <thead>
-        <tr>
-          <th> Symbol </th>
-          <th> Added </th>
-          <th> Active </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr mdbTableCol *ngFor="let item of watchList">
-          <th scope="row">{{item.id}}</th>
-          <td>{{item.added}}</td>
-          <td>{{item.active}}</td>
-          <td>
-            <button type="button" class="btn btn-primary" (click)="onSearch(item.id)">
-              View
-            </button>
-          </td>
-          <td>
-            <button type="button" class="btn btn-warning" (click)="onEdit(item)">
-              Edit
-            </button>
-          </td>
-          <td>
-            <button type="button" class="btn btn-danger" (click)="onDeleteWatchItem(item)">
-              Delete
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="panel-body">
-    <div style="display: block">
-      <p>Company name: {{currentQuote.companyName}}</p>
-      <p>Symbol: {{currentQuote.symbol}}</p>
-      <p>Price: {{currentQuote.latestPrice}}</p>
-      <p>Open: {{currentQuote.open}}</p>
-      <p>Close: {{currentQuote.close}}</p>
-      <p>High: {{currentQuote.high}}</p>
-      <p>Low: {{currentQuote.low}}</p>
-      <P>Volume: {{currentQuote.latestVolume}}</P>
-    </div>
-    <button type="button" class="btn btn-primary" (click)="addToWatchList()">
-      Add To Watch List
-    </button>
-  </div>
-
-
+    <ngb-alert *ngIf="searchNotFoundMessage" type="warning" (close)="searchNotFoundMessage = null">
+        {{searchNotFoundMessage}}
+      </ngb-alert>
 </div>
+
+<ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-2">
+
+  <ngb-panel title="Watch List">
+    <ng-template ngbPanelContent>
+      <div style="display: block">
+
+        <label class="btn btn-primary" (click)="addToWatchList()" role="button"> Add {{searchSymbol}} To Watch List
+        </label>
+
+        <label class="btn btn-primary" (click)="refreshWatchListData()" role="button"> Refresh </label>
+      </div>
+      <div class="panel-body">
+        <ngb-alert *ngIf="alertMessage" type="success" (close)="alertMessage = null">
+          {{alertMessage}}
+        </ngb-alert>
+        <table mdbTable striped="true">
+          <thead>
+            <tr>
+              <th> Symbol </th>
+              <th> Company Name </th>
+              <th> Change </th>
+              <th> Price </th>
+              <th> Added </th>
+              <th> Active </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr mdbTableCol *ngFor="let item of watchList">
+              <th scope="row">{{item.id}}</th>
+              <td>{{item.companyName}}</td>
+              <td>{{item.percentageChange}}</td>
+              <td>{{item.price}}</td>
+              <td>{{item.added}}</td>
+              <td>{{item.active}}</td>
+
+              <button type="button" class="btn btn-primary" (click)="onSearch(item.id)">
+                View
+              </button>
+
+              <button type="button" class="btn btn-danger" (click)="onDeleteWatchItem(item)">
+                Delete
+              </button>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel title="Info">
+    <ng-template ngbPanelContent>
+      <div style="display: block">
+        <p>Company name: {{currentQuote.companyName}}</p>
+        <p>Symbol: {{currentQuote.symbol}}</p>
+        <p>Price: {{currentQuote.latestPrice}}</p>
+        <p>Open: {{currentQuote.open}}</p>
+        <p>Close: {{currentQuote.close}}</p>
+        <p>High: {{currentQuote.high}}</p>
+        <p>Low: {{currentQuote.low}}</p>
+        <P>Volume: {{currentQuote.latestVolume}}</P>
+      </div>
+    </ng-template>
+  </ngb-panel>
+
+  <ngb-panel title="Chart">
+    <ng-template ngbPanelContent>
+
+      <canvas baseChart width="1200" height="800" [datasets]="lineChartData" [labels]="lineChartLabels" [options]="lineChartOptions"
+        [colors]="lineChartColors" [legend]="lineChartLegend" [chartType]="lineChartType" (chartHover)="chartHovered($event)"
+        (chartClick)="chartClicked($event)"></canvas>
+
+      <div class="btn-group" btnRadioGroup [(ngModel)]="uncheckableRadioModel">
+
+        <div *ngFor="let entry of entries" style="display: block">
+          <label class="btn btn-info" btnRadio="Left" uncheckable tabindex="0" (click)="changeChartRange(entry)" role="button">{{entry}}</label>
+          <!-- <button (click)="changeChartRange(entry)"> {{entry}} </button> -->
+        </div>
+
+      </div>
+    </ng-template>
+  </ngb-panel>
+
+</ngb-accordion>

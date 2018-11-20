@@ -27,6 +27,7 @@ import { ChartsModule } from 'ng2-charts';
 import { AlertModule } from 'ngx-bootstrap';
 import { ModalComponent } from './custom/modal/modal.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { HistoryComponent } from './history/history.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
     UserComponent,
     RegisterComponent,
     DashComponent,
-    ModalComponent
+    ModalComponent,
+    HistoryComponent
   ],
   imports: [
     BrowserModule,

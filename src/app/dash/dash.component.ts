@@ -9,6 +9,7 @@ import { FirestoreService } from '../firestore.service';
 import { WatchItem } from '../model/watch-item';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalComponent } from '../custom/modal/modal.component';
+import { HistoryService } from '../history/history.service';
 
 
 @Component({
@@ -40,7 +41,9 @@ export class DashComponent implements OnInit {
     private chartService: ChartService,
     private db: AngularFirestore,
     private firestoreService: FirestoreService,
-    private modalService: NgbModal) {
+    private modalService: NgbModal,
+    private history: HistoryService) {
+
     this.currentQuote = [];
     this.lineChartData = new Array<any>();
     this.lineChartLabels = new Array<any>();
@@ -66,9 +69,9 @@ export class DashComponent implements OnInit {
         );
       });
       if (this.watchList.length > 0) {
-        this.onSearch(this.watchList[0].id, "1m");
+        this.onSearch(this.watchList[0].id, "1m", true);
       } else {
-        this.onSearch("AAPL", "");
+        this.onSearch("AAPL", "", true);
       }
 
       this.refreshWatchListData();
@@ -76,10 +79,18 @@ export class DashComponent implements OnInit {
 
   }
 
-  onSearch(symbol: string, chartRange: string) {
+  searchClicked(symbol: string) {
+    this.onSearch(symbol, "", false);
+  }
+
+  onSearch(symbol: string, chartRange: string, initSearch: boolean) {
 
     if (chartRange == null || chartRange == '') {
       chartRange = '1m';
+    }
+
+    if (!initSearch) {
+      this.saveToUserHistory(`Searched for ${symbol} with range ${chartRange}`);
     }
     
     this.quoteService.getQuote(symbol).subscribe((response: any[]) => {
@@ -112,12 +123,13 @@ export class DashComponent implements OnInit {
       .doc(this.searchSymbol)
       .set({ 'active': true, 'added': searchDate, 'companyName': this.currentQuote['companyName'] });
 
-    this.alertMessage = `${this.searchSymbol} was added to your watch list.`
+    this.alertMessage = `${this.searchSymbol} was added to your watch list.`;
+    this.saveToUserHistory(`Added ${this.searchSymbol} to watch list.`);
   }
 
   changeChartRange(entry: string) {
     console.log(`onSelectionChange symbol: ${this.searchSymbol} range: ${entry}`);
-    this.onSearch(this.searchSymbol, entry);
+    this.onSearch(this.searchSymbol, entry, true);
   }
 
   onDeleteWatchItem(item: WatchItem) {
@@ -132,6 +144,7 @@ export class DashComponent implements OnInit {
     }).catch((error) => {
       console.log(error);
     });
+    this.saveToUserHistory(`Deleted watch item ${item.id} from watch list.`);
   }
 
   refreshWatchListData() {
@@ -142,6 +155,7 @@ export class DashComponent implements OnInit {
           item.percentageChange = response[item.id]['quote']['change'];
         });
       });
+      this.saveToUserHistory("Refreshed watch list.");
     }
   }
 
@@ -152,6 +166,10 @@ export class DashComponent implements OnInit {
     }
 
     return true;
+  }
+
+  private saveToUserHistory(message: string) {
+    this.history.saveHistory(firebase.auth().currentUser.email, message);
   }
 
   private processChart(chartResponse: any[]) {

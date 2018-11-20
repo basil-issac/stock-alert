@@ -1,7 +1,7 @@
 <div class="panel-body">
   <label>Type in Symbol :</label>
-  <input class="form-control" #box (keyup.enter)="onSearch(box.value)">
-  <button class="btn-primary" (click)="onSearch(box.value)"> Search </button>
+  <input class="form-control" #box (keyup.enter)="searchClicked(box.value)">
+  <button class="btn-primary" (click)="searchClicked(box.value)"> Search </button>
 
   <ngb-alert *ngIf="searchMessage" type="success" (close)="searchMessage = null">
       {{searchMessage}}

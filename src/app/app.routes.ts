@@ -7,6 +7,7 @@ import { AuthGuard } from './core/auth.gaurd';
 import { UserResolver } from './user/user.resolver';
 import { DashComponent } from './dash/dash.component';
 import { HistoryComponent } from './history/history.component';
+import { AdminComponent } from './admin/admin.component';
 
 export const rootRouterConfig: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -15,5 +16,6 @@ export const rootRouterConfig: Routes = [
   { path: 'user', component: UserComponent,  resolve: { data: UserResolver}},
   //{path: 'dash', component: DashComponent}
    { path: 'dash', component: DashComponent,  resolve: { data: UserResolver}},
-   { path: 'history', component: HistoryComponent,  resolve: { data: UserResolver}}
+   { path: 'history', component: HistoryComponent,  resolve: { data: UserResolver}},
+   { path: 'admin', component: AdminComponent,  resolve: { data: UserResolver}}
 ];

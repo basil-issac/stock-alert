@@ -2,17 +2,20 @@
 <div class="container">
   <div class="jumbotron">
     <h1>{{ title }}</h1>
-    <h2>Watch your stocks and set alerts!</h2>
+    <h2>Watch your stocks with real time data!</h2>
   </div>
   <ul class="nav nav-tabs">
-    <li class="nav-item">
+    <li class="nav-item" ng-if="env.isLoggedIn">
       <a class="nav-link" routerLink="/dash">Dash Board</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" ng-if="env.isLoggedIn">
       <a class="nav-link" routerLink="/user">User</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" routerLink="/history">History</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin">Admin</a>
     </li>
   </ul>
 

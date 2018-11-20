@@ -68,6 +68,7 @@ export class DashComponent implements OnInit {
           }
         );
       });
+
       if (this.watchList.length > 0) {
         this.onSearch(this.watchList[0].id, "1m", true);
       } else {
@@ -76,6 +77,7 @@ export class DashComponent implements OnInit {
 
       this.refreshWatchListData();
     });
+
 
   }
 
@@ -92,7 +94,7 @@ export class DashComponent implements OnInit {
     if (!initSearch) {
       this.saveToUserHistory(`Searched for ${symbol} with range ${chartRange}`);
     }
-    
+
     this.quoteService.getQuote(symbol).subscribe((response: any[]) => {
       this.searchSymbol = symbol;
       this.searchNotFoundMessage = null;

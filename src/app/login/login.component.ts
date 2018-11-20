@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../core/auth.service'
 import { Router, Params } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UserService } from '../core/user.service';
 
 @Component({
   selector: 'page-login',
@@ -16,7 +17,8 @@ export class LoginComponent {
   constructor(
     public authService: AuthService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private userService: UserService
   ) {
     this.createForm();
   }
@@ -52,6 +54,7 @@ export class LoginComponent {
   tryLogin(value){
     this.authService.doLogin(value)
     .then(res => {
+      this.userService.updateUserLoginTimeToNow();
       this.router.navigate(['/dash']);
     }, err => {
       console.log(err);

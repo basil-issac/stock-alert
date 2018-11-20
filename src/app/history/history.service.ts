@@ -20,8 +20,12 @@ export class HistoryService {
       .collection('history').add({'message': historyMessage, 'dateTime': searchDate});
   }
 
-  getUserHistory(user: string) {
+  getHistory(user: string) {
     return this.db.collection(`/users/${user}/history`).valueChanges();
+  }
+
+  getAllHistory() {
+    
   }
   
 }

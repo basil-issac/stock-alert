@@ -28,6 +28,7 @@ import { AlertModule } from 'ngx-bootstrap';
 import { ModalComponent } from './custom/modal/modal.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { HistoryComponent } from './history/history.component';
+import { AdminComponent } from './admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { HistoryComponent } from './history/history.component';
     RegisterComponent,
     DashComponent,
     ModalComponent,
-    HistoryComponent
+    HistoryComponent,
+    AdminComponent
   ],
   imports: [
     BrowserModule,

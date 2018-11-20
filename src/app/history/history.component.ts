@@ -17,7 +17,7 @@ export class HistoryComponent implements OnInit {
 
   ngOnInit() {
     var user = firebase.auth().currentUser;
-    this.historyService.getUserHistory(user.email).subscribe((response: any[]) => {
+    this.historyService.getHistory(user.email).subscribe((response: any[]) => {
       this.history = response;
     })
   }

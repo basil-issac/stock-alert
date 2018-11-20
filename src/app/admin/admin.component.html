@@ -1,0 +1,22 @@
+<table mdbTable striped="true">
+  <thead>
+    <tr>
+      <th> Email </th>
+      <th> First Name </th>
+      <th> Last Name </th>
+      <th> Last Seen </th>
+      <th> Created </th>
+      <th> Active </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr mdbTableCol *ngFor="let item of users">
+      <td>{{item.id}}</td>
+      <td>{{item.first}}</td>
+      <td>{{item.last}}</td>
+      <td>{{item.login}}</td>
+      <td>{{item.created}}</td>
+      <td>{{item.active}}</td>
+    </tr>
+  </tbody>
+</table>

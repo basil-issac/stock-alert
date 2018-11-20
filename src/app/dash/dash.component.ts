@@ -92,6 +92,7 @@ export class DashComponent implements OnInit {
     }
 
     if (!initSearch) {
+      this.sendSearchAnalytics();
       this.saveToUserHistory(`Searched for ${symbol} with range ${chartRange}`);
     }
 
@@ -240,6 +241,15 @@ export class DashComponent implements OnInit {
 
   chartHovered(e: any): void {
     console.log(e);
+  }
+
+  sendSearchAnalytics = () => {
+    (<any>window).ga('send', 'event', {
+      eventCategory: 'User Touch',
+      eventLabel: 'Search',
+      eventAction: `Search ${this.searchSymbol}`,
+      eventValue: 10
+    });
   }
 
 }

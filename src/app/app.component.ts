@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { UserService } from './core/user.service';
 import { Router, NavigationEnd } from '@angular/router';
 import * as firebase from 'firebase/app';
-import { environment } from '../environments/environment';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +11,7 @@ import { environment } from '../environments/environment';
 })
 export class AppComponent {
   env = environment;
+  isAdmin: boolean;
 
   constructor(private userService: UserService,
     private router: Router) {
@@ -20,6 +21,25 @@ export class AppComponent {
           (<any>window).ga('send', 'pageview');
         }
       });
+
+  }
+
+  ngOnInit() {
+
+    var user = firebase.auth().currentUser;
+    if (user != null) {
+      environment.isLoggedIn = true;
+    }
+
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user != null) {
+        environment.isLoggedIn = true;
+        console.log(`App component -- ${user.email}`);
+      } else {
+        environment.isLoggedIn = false;
+      }
+    });
+
   }
 
 

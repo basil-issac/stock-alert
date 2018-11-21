@@ -84,5 +84,13 @@ export class AuthService {
     });
   }
 
+  isLoggedIn() {
+    var user = firebase.auth().currentUser;
+    if (user != null) {
+      return true;
+    }
+    return false;
+  }
+
 
 }

@@ -4,20 +4,20 @@
     <h1>{{ title }}</h1>
     <h2>Watch your stocks with real time data!</h2>
   </div>
-  <ul class="nav nav-tabs">
-    <li class="nav-item" ng-if="env.isLoggedIn">
+  <div *ngIf="env.isLoggedIn">
+    <ul class="nav nav-tabs">
+    <li class="nav-item">
       <a class="nav-link" routerLink="/dash">Dash Board</a>
     </li>
-    <li class="nav-item" ng-if="env.isLoggedIn">
+    <li class="nav-item">
       <a class="nav-link" routerLink="/user">User</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" routerLink="/history">History</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/admin">Admin</a>
-    </li>
   </ul>
+  </div>
+  
 
   <router-outlet></router-outlet>
 </div>

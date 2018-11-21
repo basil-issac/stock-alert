@@ -158,7 +158,6 @@ export class DashComponent implements OnInit {
           item.percentageChange = response[item.id]['quote']['change'];
         });
       });
-      this.saveToUserHistory("Refreshed watch list.");
     }
   }
 

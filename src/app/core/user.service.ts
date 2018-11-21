@@ -73,7 +73,7 @@ export class UserService {
     var time = ' ' + d.getUTCHours() + ":" + d.getUTCMinutes() + ":" + d.getUTCSeconds();
     var createdDateTime = `${date} ${time}`;
 
-    this.db.doc(`users/${email}`).update(
+    this.db.doc(`users/${email}`).set(
       {
         'first': first,
         'last': last,

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from './admin.service';
+import { UserService } from '../core/user.service';
+import * as firebase from 'firebase/app';
 
 @Component({
   selector: 'app-admin',
@@ -9,16 +11,21 @@ import { AdminService } from './admin.service';
 export class AdminComponent implements OnInit {
   users: any[];
 
-  constructor(private adminService: AdminService) {
+  constructor(private adminService: AdminService, private userService: UserService) {
     this.users = [];
 
    }
 
   ngOnInit() {
-    this.adminService.getAllUsers().subscribe((response: any[]) => {
-      console.log(`ADMIN USERS: ${response}`);
-      this.users = response;
-    })
+    var user = firebase.auth().currentUser;
+    this.userService.getUserDetails(user.email).subscribe((response: any) => {
+      if(response['admin']) {
+        this.adminService.getAllUsers().subscribe((response: any[]) => {
+          console.log(`ADMIN USERS: ${response}`);
+          this.users = response;
+        })
+      }
+    });
   }
 
 }

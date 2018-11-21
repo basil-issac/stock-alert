@@ -10,6 +10,10 @@ export class ChartService {
   constructor(private http: HttpClient) { }
 
   getChart(symbol: string, range: string) {
-    return this.http.get(`${environment.iex_host}/${symbol}/chart/${range}`);
+    var modifiedRange = range;
+    
+      modifiedRange = `${range}?chartInterval=10`
+    
+    return this.http.get(`${environment.iex_host}/${symbol}/chart/${modifiedRange}`);
   }
 }

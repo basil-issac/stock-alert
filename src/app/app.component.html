@@ -1,7 +1,7 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <div class="container">
   <div class="jumbotron">
-    <h1>{{ title }}</h1>
+    <h1>Stock Watch</h1>
     <h2>Watch your stocks with real time data!</h2>
   </div>
   <div *ngIf="env.isLoggedIn">
@@ -10,11 +10,11 @@
       <a class="nav-link" routerLink="/dash">Dash Board</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" routerLink="/user">User</a>
-    </li>
-    <li class="nav-item">
       <a class="nav-link" routerLink="/history">History</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" routerLink="/user">User</a>
+      </li>
   </ul>
   </div>
   

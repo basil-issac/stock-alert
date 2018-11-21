@@ -1,3 +1,4 @@
+<h1 *ngIf="!isAdmin">YOU ARE NOT AN ADMIN. NICE TRY!</h1>
 <table mdbTable striped="true">
   <thead>
     <tr>
@@ -17,6 +18,28 @@
       <td>{{item.login}}</td>
       <td>{{item.created}}</td>
       <td>{{item.active}}</td>
+      <td><button type="button" class="btn btn-primary" (click)="viewHistory(item.id)">
+          View History
+        </button></td>
     </tr>
   </tbody>
 </table>
+
+  <div *ngIf="viewingUser != null">
+    <p>History view for {{viewingUser}}</p>
+
+    <table mdbTable striped="true">
+      <thead>
+        <tr>
+          <th> Date Time </th>
+          <th> Log Message </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr mdbTableCol *ngFor="let item of history">
+          <td>{{item.dateTime}}</td>
+          <td>{{item.message}}</td>
+        </tr>
+      </tbody>
+    </table>
+</div>

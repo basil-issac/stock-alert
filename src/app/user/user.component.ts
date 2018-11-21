@@ -5,56 +5,52 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FirebaseUserModel } from '../core/user.model';
+import * as firebase from 'firebase/app';
+import { HistoryService } from '../history/history.service';
 
 @Component({
   selector: 'page-user',
   templateUrl: 'user.component.html',
   styleUrls: ['user.scss']
 })
-export class UserComponent implements OnInit{
+export class UserComponent implements OnInit {
 
-  user: FirebaseUserModel = new FirebaseUserModel();
+  user: any;
   profileForm: FormGroup;
+  userDetails: any;
+  alertMessage: string;
 
   constructor(
     public userService: UserService,
     public authService: AuthService,
     private route: ActivatedRoute,
-    private location : Location,
-    private fb: FormBuilder
+    private location: Location,
+    private fb: FormBuilder,
+    private historyService: HistoryService
   ) {
 
   }
 
   ngOnInit(): void {
-    this.route.data.subscribe(routeData => {
-      let data = routeData['data'];
-      if (data) {
-        this.user = data;
-        this.createForm(this.user.name);
-      }
-    })
-  }
-
-  createForm(name) {
-    this.profileForm = this.fb.group({
-      name: [name, Validators.required ]
+    this.user = firebase.auth().currentUser;
+    this.userService.getUserDetails(this.user.email).subscribe((response: any) => {
+      this.userDetails = response;
     });
   }
 
-  save(value){
-    this.userService.updateCurrentUser(value)
-    .then(res => {
-      console.log(res);
-    }, err => console.log(err))
+  save(first: string, last: string) {
+    this.userService.updateCurrentUserName(first, last);
+    this.alertMessage = "Successfully updated name.";
+    this.historyService.saveHistory(this.user.email, `Updated name to ${first} ${last}`);
   }
 
-  logout(){
+  logout() {
     this.authService.doLogout()
-    .then((res) => {
-      this.location.back();
-    }, (error) => {
-      console.log("Logout error", error);
-    });
+      .then((res) => {
+        this.historyService.saveHistory(this.user.email, "Logged out.");
+        this.location.back();
+      }, (error) => {
+        console.log("Logout error", error);
+      });
   }
 }

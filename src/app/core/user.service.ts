@@ -5,6 +5,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 import { FirestoreService } from "../firestore.service";
 import { environment } from "src/environments/environment";
+import { HistoryService } from "../history/history.service";
 
 @Injectable()
 export class UserService {
@@ -12,7 +13,8 @@ export class UserService {
   constructor(
     public db: AngularFirestore,
     public afAuth: AngularFireAuth,
-    private fireStore: FirestoreService
+    private fireStore: FirestoreService,
+    private historyService: HistoryService
   ) {
   }
 
@@ -52,6 +54,7 @@ export class UserService {
         'lastLogin': lastLoginDateTime
       }
     );
+    this.historyService.saveHistory(user.email, "Logged in.");
   }
 
   createUserInDatabase(email: string,
@@ -70,7 +73,7 @@ export class UserService {
     var time = ' ' + d.getUTCHours() + ":" + d.getUTCMinutes() + ":" + d.getUTCSeconds();
     var createdDateTime = `${date} ${time}`;
 
-    this.db.doc(`users/${email}`).set(
+    this.db.doc(`users/${email}`).update(
       {
         'first': first,
         'last': last,
@@ -80,9 +83,20 @@ export class UserService {
         'active': true
       }
     );
+    this.historyService.saveHistory(email, "Account created.");
   }
 
-  getCurrentUserDetails(email: string) {
+  updateCurrentUserName(first: string, last: string) {
+    var user = firebase.auth().currentUser;
+    this.db.doc(`users/${user.email}`).update(
+      {
+        'first': first,
+        'last': last
+      }
+    );
+  }
+
+  getUserDetails(email: string) {
 
     return this.db.doc(`users/${email}`).valueChanges();
 
